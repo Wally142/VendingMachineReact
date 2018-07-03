@@ -15,6 +15,8 @@ class App extends Component {
     dimes: '',
     nickels: '',
     pennies: '',
+    message: '',
+    currentDiv: ''
 
   }
   constructor(props) {
@@ -36,9 +38,26 @@ class App extends Component {
     this.setState({
       money: event.target.value
     })
-    let coins = this.state.money
-    console.log(coins)
   }
+
+  displayChange = div => {
+    this.setState({ currentDiv: div });
+  };
+
+  renderPage = () => {
+    if (this.state.currentDiv === "Change") {
+      return <Change
+        quarters={this.state.quarters}
+        dimes={this.state.dimes}
+        nickels={this.state.nickels}
+        pennies={this.state.pennies}
+        message={this.state.message}
+        currentDiv={this.state.currentDiv}
+        displayChange={this.displayChange}
+      />
+    }
+  }
+
 
   purchase(id) {
     let money = this.state.money
@@ -50,10 +69,12 @@ class App extends Component {
           quarters: response.quarters,
           dimes: response.dimes,
           nickels: response.nickels,
-          pennies: response.pennies
+          pennies: response.pennies,
+          message: response.message
         })
+        this.displayChange('Change')
       })
-      .catch(error => console.log(`Error with fetch getItems: ${error} `))
+      .catch(error => console.log(`Error with fetch getItems: ${error} `));
   }
 
   getItems() {
@@ -88,12 +109,7 @@ class App extends Component {
             <p>{this.state.money}</p>
           </div>
         </Wrapper>
-        <Change
-          quarters={this.state.quarters}
-          dimes={this.state.dimes}
-          nickels={this.state.nickels}
-          pennies={this.state.pennies}
-          />
+        {this.renderPage()}
       </div>
     );
   }
