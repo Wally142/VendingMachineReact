@@ -3,19 +3,25 @@ import './App.css';
 import Vending from "./components/Vending";
 import Wrapper from "./components/Wrapper";
 import Title from "./components/Title";
+import Change from "./components/Change";
+
 
 class App extends Component {
 
   state = {
     items: [],
-    money: ''
+    money: '',
+    quarters: '',
+    dimes: '',
+    nickels: '',
+    pennies: '',
+
   }
   constructor(props) {
     super(props)
     this.handleMoney = this.handleMoney.bind(this)
     this.purchase = this.purchase.bind(this)
   }
-
 
   componentDidMount() {
     console.log('Vending Machine Items Loaded')
@@ -35,11 +41,18 @@ class App extends Component {
   }
 
   purchase(id) {
-    
     let money = this.state.money
     console.log(`id: ${id}, amount: ${money}`)
     fetch(`http://localhost:8080/money/${money}/item/${id}`)
       .then(response => response.json())
+      .then(response => {
+        this.setState({
+          quarters: response.quarters,
+          dimes: response.dimes,
+          nickels: response.nickels,
+          pennies: response.pennies
+        })
+      })
       .catch(error => console.log(`Error with fetch getItems: ${error} `))
   }
 
@@ -56,26 +69,32 @@ class App extends Component {
 
   render() {
     return (
-      <Wrapper>
-        <Title>Awesome Vending Machine</Title>
-        {this.state.items.map(item => (
-          <Vending
-            id={item.id}
-            key={item.id}
-            name={item.name}
-            price={item.price}
-            quantity={item.quantity}
-            onClick={this.purchase}
+      <div>
+        <Wrapper>
+          <Title>Awesome Vending Machine</Title>
+          {this.state.items.map(item => (
+            <Vending
+              id={item.id}
+              key={item.id}
+              name={item.name}
+              price={item.price}
+              quantity={item.quantity}
+              onClick={this.purchase}
+            />
+          ))}
+          <div>
+            <p className="deposit">Deposit Money</p>
+            <input type="text" value={this.state.money} onChange={this.handleMoney} />
+            <p>{this.state.money}</p>
+          </div>
+        </Wrapper>
+        <Change
+          quarters={this.state.quarters}
+          dimes={this.state.dimes}
+          nickels={this.state.nickels}
+          pennies={this.state.pennies}
           />
-        ))}
-        <div>
-          <p className="deposit">Deposit Money</p>
-          <input type="text" value={this.state.money} onChange={this.handleMoney} />
-          <p>{this.state.money}</p>
-          {/* <button className="btn btn-primary" onClick={this.purchase}>Purchase</button> */}
-        </div>
-      </Wrapper>
-
+      </div>
     );
   }
 }
