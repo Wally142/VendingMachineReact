@@ -74,7 +74,7 @@ class App extends Component {
         })
         this.displayChange('Change')
       })
-      .catch(error => console.log(`Error with fetch getItems: ${error} `));
+      .catch(error => console.log(`Error with purchase: ${error} `));
   }
 
   getItems() {
